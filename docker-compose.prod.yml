@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:6
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    image: ${DOCKERHUB_USERNAME}/mean-backend:latest
+    restart: unless-stopped
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/dd_db
+      - PORT=8080
+    depends_on:
+      - mongo
+
+  frontend:
+    image: ${DOCKERHUB_USERNAME}/mean-frontend:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:
